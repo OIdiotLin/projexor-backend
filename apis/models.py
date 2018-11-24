@@ -3,8 +3,8 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 # Create your models here.
+from django.utils.datetime_safe import datetime
 
 """
 提醒大家的话：
@@ -22,6 +22,10 @@ class User(AbstractUser):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    class Meta:
+        verbose_name = '用户'
+        verbose_name_plural = '用户'
+
 
 class Project(models.Model):
     """项目表
@@ -29,6 +33,10 @@ class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, default='空项目', null=False)
     users = models.ManyToManyField(get_user_model(), through='UserInProject')
+
+    class Meta:
+        verbose_name = '项目'
+        verbose_name_plural = '项目'
 
 
 class UserInProject(models.Model):
@@ -47,3 +55,121 @@ class UserInProject(models.Model):
     owner = models.BooleanField(default=False, null=False)
     admin = models.BooleanField(default=False, null=False)
 
+    class Meta:
+        verbose_name = '用户 - 项目关系'
+        verbose_name_plural = '用户 - 项目关系'
+
+
+class Resource(models.Model):
+    """资源表
+
+    Fields:
+        id: 资源 id
+        name: 资源名称
+        description: 描述
+        total: 总量
+        remainder: 余量（如果为可消耗品则为 null）
+        unit: 单位
+        project_id: 关联项目 Project 的 id
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, default='新资源', null=False)
+    description = models.TextField(max_length=512, blank=True)
+    total = models.FloatField()
+    remainder = models.FloatField(null=True)
+    unit = models.CharField(max_length=20, null=False)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '资源'
+        verbose_name_plural = '资源'
+
+
+class Task(models.Model):
+    """任务表
+
+    Fields:
+        id: 任务 id
+        name: 任务名称
+        description: 描述
+        begin_time: 开始时间
+        end_time: 结束时间
+        state: 状态 (正在进行 running, 已经结束 finished)
+        project_id: 关联项目 Project 的 id
+        users: 关联用户 User 的 id
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, default='新任务', null=False)
+    description = models.TextField(max_length=512, blank=True)
+    begin_time = models.DateTimeField(default=datetime.now, null=False)
+    end_time = models.DateTimeField(default=datetime.now, null=False)
+    state = models.CharField(max_length=10,
+                             choices=(('R', 'running'), ('F', 'finished')),
+                             default='R')
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    users = models.ManyToManyField(get_user_model(), through='UserInTask')
+
+    class Meta:
+        verbose_name = '任务'
+        verbose_name_plural = '任务'
+
+
+class UserInTask(models.Model):
+    """用户 - 任务 多对多关系表
+
+    Fields:
+        id: 关系 id
+        user_id: 关联用户 User 的 id
+        task_id: 关联任务 Task 的 id
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '用户 - 任务关系'
+        verbose_name_plural = '用户 - 任务关系'
+
+
+class Post(models.Model):
+    """讨论帖表
+
+    Fields:
+        id: 讨论帖 id
+        title: 标题
+        content: 内容
+        time: 创建时间
+        project_id: 关联项目 Project 的 id
+        user_id: 关联用户 User 的 id
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=100, default='新讨论帖', null=False)
+    content = models.TextField(max_length=2048, default='讨论内容', null=False)
+    time = models.DateTimeField(default=datetime.now, null=False)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '讨论帖'
+        verbose_name_plural = '讨论帖'
+
+
+class Reply(models.Model):
+    """讨论回复表
+
+    Fields:
+        id: 回复 id
+        content: 内容
+        time: 创建时间
+        post_id: 关联讨论帖 Post 的 id
+        user_id: 关联用户 User 的 id
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    content = models.TextField(max_length=2048, default='讨论内容', null=False)
+    time = models.DateTimeField(default=datetime.now, null=False)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '讨论回复'
+        verbose_name_plural = '讨论回复'

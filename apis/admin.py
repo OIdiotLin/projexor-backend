@@ -9,3 +9,8 @@ admin.site.site_header = 'Projexor 后台管理'
 admin.site.register(User)
 admin.site.register(Project)
 admin.site.register(UserInProject)
+admin.site.register(Task)
+admin.site.register(UserInTask)
+admin.site.register(Post)
+admin.site.register(Reply)
+admin.site.register(Resource)
