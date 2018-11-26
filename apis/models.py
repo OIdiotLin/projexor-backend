@@ -44,14 +44,14 @@ class UserInProject(models.Model):
 
     Fields:
         id: 关系 id
-        user_id: 关联用户 User 的 id
-        project_id: 关联项目 Project 的 id
+        user: 关联用户 User 的 id
+        project: 关联项目 Project 的 id
         owner: 是否是项目发起人
         admin: 是否有项目内容管理权限
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     owner = models.BooleanField(default=False, null=False)
     admin = models.BooleanField(default=False, null=False)
 
@@ -70,7 +70,7 @@ class Resource(models.Model):
         total: 总量
         remainder: 余量（如果为可消耗品则为 null）
         unit: 单位
-        project_id: 关联项目 Project 的 id
+        project: 关联项目 Project 的 id
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, default='新资源', null=False)
@@ -78,7 +78,7 @@ class Resource(models.Model):
     total = models.FloatField()
     remainder = models.FloatField(null=True)
     unit = models.CharField(max_length=20, null=False)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '资源'
@@ -95,7 +95,7 @@ class Task(models.Model):
         begin_time: 开始时间
         end_time: 结束时间
         state: 状态 (正在进行 running, 已经结束 finished)
-        project_id: 关联项目 Project 的 id
+        project: 关联项目 Project 的 id
         users: 关联用户 User 的 id
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -106,7 +106,7 @@ class Task(models.Model):
     state = models.CharField(max_length=10,
                              choices=(('R', 'running'), ('F', 'finished')),
                              default='R')
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     users = models.ManyToManyField(get_user_model(), through='UserInTask')
 
     class Meta:
@@ -119,12 +119,12 @@ class UserInTask(models.Model):
 
     Fields:
         id: 关系 id
-        user_id: 关联用户 User 的 id
-        task_id: 关联任务 Task 的 id
+        user: 关联用户 User 的 id
+        task: 关联任务 Task 的 id
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '用户 - 任务关系'
@@ -139,15 +139,15 @@ class Post(models.Model):
         title: 标题
         content: 内容
         time: 创建时间
-        project_id: 关联项目 Project 的 id
-        user_id: 关联用户 User 的 id
+        project: 关联项目 Project 的 id
+        user: 关联用户 User 的 id
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100, default='新讨论帖', null=False)
     content = models.TextField(max_length=2048, default='讨论内容', null=False)
     time = models.DateTimeField(default=datetime.now, null=False)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '讨论帖'
@@ -161,14 +161,14 @@ class Reply(models.Model):
         id: 回复 id
         content: 内容
         time: 创建时间
-        post_id: 关联讨论帖 Post 的 id
-        user_id: 关联用户 User 的 id
+        post: 关联讨论帖 Post 的 id
+        user: 关联用户 User 的 id
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.TextField(max_length=2048, default='讨论内容', null=False)
     time = models.DateTimeField(default=datetime.now, null=False)
-    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '讨论回复'

@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_jwt.settings import api_settings
 
+from apis.controllers.user import UserController
 from apis.serializers import UserSerializer
 
 
@@ -14,9 +15,10 @@ from apis.serializers import UserSerializer
 def register(request):
     """注册新用户
     """
-    serializer = UserSerializer(data=request.data)
+    details = dict(request.data)
+    user = UserController().create(**details)
+    serializer = UserSerializer(data=user)
     if serializer.is_valid():
-        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
