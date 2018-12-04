@@ -8,5 +8,6 @@ urlpatterns = [
     path('users/login/', user.login, name='user-login'),
     path('users/<id>/', user.get, name='user-get'),
 
-    path('projects/', project.get_list, name='project-get-list')
+    path('projects/', project.get_list, name='project-get-list'),
+    path('projects/<id>/', project.single_entity, name='project-single'),
 ]
