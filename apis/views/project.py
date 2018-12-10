@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -38,7 +40,6 @@ def single_entity(request, id):
     """
     if request.method == 'GET':
         project = ProjectController().get_single(id=id)
-        print(project.name)
         if project:
             serializer = ProjectSerializer(project)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -48,5 +49,21 @@ def single_entity(request, id):
         if res:
             return Response(None, status=status.HTTP_200_OK)
         return Response(None, status=status.HTTP_404_NOT_FOUND)
-    # TODO 编写 PUT 和 PATCH 方法
 
+    if request.method == 'PUT':
+        details = json.loads(request.body)
+        res = ProjectController().update(**details)
+        if res:
+            project = ProjectController().get_single(id=id)
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(None, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        details = json.loads(request.body)
+        res = ProjectController().update(**details)
+        if res:
+            project = ProjectController().get_single(id=id)
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(None, status=status.HTTP_404_NOT_FOUND)
