@@ -38,7 +38,6 @@ def single_entity(request, id):
     """
     if request.method == 'GET':
         project = ProjectController().get_single(id=id)
-        print(project.name)
         if project:
             serializer = ProjectSerializer(project)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -48,5 +47,21 @@ def single_entity(request, id):
         if res:
             return Response(None, status=status.HTTP_200_OK)
         return Response(None, status=status.HTTP_404_NOT_FOUND)
-    # TODO 编写 PUT 和 PATCH 方法
 
+    if request.method == 'PUT':
+        details = request.PUT.dict()
+        res = ProjectController().update(**details)
+        if res:
+            project = ProjectController().get_single(id=id)
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(None, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PATCH':
+        details = request.PATCH.dict()
+        res = ProjectController().update(**details)
+        if res:
+            project = ProjectController().get_single(id=id)
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(None, status=status.HTTP_404_NOT_FOUND)

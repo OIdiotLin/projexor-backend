@@ -16,14 +16,13 @@ class ProjectController:
         return False
 
     def update(self, **details):
-        # TODO 编写 update 结果
         if details:
-            project = Project.objects.get(id=details['id'])
-            print(project)
-        return True
+            id = details.pop('id')
+            Project.objects.filter(id=id).update(**details)
+            return True
+        return False
 
     def get_list(self, **details):
-            # print(details)
         projects = Project.objects.filter(**details)
         return projects
 
