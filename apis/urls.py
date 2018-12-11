@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apis.views import user, project, task, resource
+from apis.views import user, project, task, resource, post, reply
 
 urlpatterns = [
     path('users/', user.get_list, name='user-get-list'),
@@ -16,4 +16,10 @@ urlpatterns = [
 
     path('resources/', resource.get_list_or_create, name='resource-get-list-or-create'),
     path('resources/<id>/', resource.single_entity, name='resource-single'),
+
+    path('replies/', reply.get_list_or_create, name='reply-get-list-or-create'),
+    path('replies/<id>/', reply.single_entity, name='reply-single'),
+
+    path('posts/', post.get_list_or_create, name='post-get-list-or-create'),
+    path('posts/<id>/', post.single_entity, name='post-single'),
 ]
