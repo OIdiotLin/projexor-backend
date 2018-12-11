@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apis.views import user, project, task
+from apis.views import user, project, task, resource
 
 urlpatterns = [
     path('users/', user.get_list, name='user-get-list'),
@@ -13,4 +13,7 @@ urlpatterns = [
 
     path('tasks/', task.get_list, name='task-get-list'),
     path('tasks/<id>/', task.single_entity, name='task-single'),
+
+    path('resources/', resource.get_list_or_create, name='resource-get-list-or-create'),
+    path('resources/<id>/', resource.single_entity, name='resource-single'),
 ]
