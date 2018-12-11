@@ -89,8 +89,10 @@ DATABASES = {
         'HOST': MYSQL_HOST,
         'PORT': MYSQL_PORT,
         'TEST': {
-            'NAME': 'test_{}'.format(MYSQL_NAME)
-        }
+            'NAME': 'test_{}'.format(MYSQL_NAME),
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_general_ci'
+        },
     }
 
 }

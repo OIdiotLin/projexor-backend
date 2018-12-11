@@ -1,11 +1,7 @@
-from django.contrib import auth
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import update_last_login
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_jwt.settings import api_settings
 
 from apis.controllers.user import UserController
 from apis.serializers import UserSerializer
@@ -17,20 +13,33 @@ def register(request):
     """
     details = dict(request.data)
     user = UserController().create(**details)
-    serializer = UserSerializer(data=user)
-    if serializer.is_valid():
+    if user:
+        serializer = UserSerializer(data=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def get_all(request):
-    """查询用户
+def get_list(request):
+    """查询用户列表
     """
-    users = get_user_model().objects.all()
+    details = request.GET.dict()
+    users = UserController().get_list(**details)
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def get(request, id):
+    """通过 id 查询某个用户
+    """
+    user = UserController().get_by_id(id)
+    if user:
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    return Response(None, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -42,10 +51,8 @@ def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
     # 登录
-    user = auth.authenticate(username=username, password=password)
-    if user is not None:
-        token = api_settings.JWT_ENCODE_HANDLER(api_settings.JWT_PAYLOAD_HANDLER(user))
-        update_last_login(None, user)
+    user, token = UserController().login(username, password)
+    if user:
         serializer = UserSerializer(user)
         return Response(data={
             'token': token,
@@ -54,4 +61,4 @@ def login(request):
             'Set-Cookie': 'token={}'.format(token)  # 提供 Cookies
         })
 
-    return Response("hahaha", status=status.HTTP_401_UNAUTHORIZED)
+    return Response(None, status=status.HTTP_401_UNAUTHORIZED)
