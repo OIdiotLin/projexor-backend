@@ -9,28 +9,24 @@ from apis.controllers.project import ProjectController
 from apis.serializers import ProjectSerializer
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated, ))
-def get_list(request):
-    """查询项目列表
+def get_list_or_create(request):
+    """查询项目列表 or 新建一个项目
     """
-    details = request.GET.dict()
-    projects = ProjectController().get_list(**details)
-    serializer = ProjectSerializer(projects, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'GET':
+        details = request.GET.dict()
+        projects = ProjectController().get_list(**details)
+        serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-@api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
-def create(request):
-    """新建一个项目
-    """
-    details = dict(request.data)
-    project = ProjectController().create(**details)
-    if project:
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(None, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        details = dict(request.data)
+        project = ProjectController().create(**details)
+        if project:
+            serializer = ProjectSerializer(project)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT', 'PATCH', 'DELETE', 'GET'])

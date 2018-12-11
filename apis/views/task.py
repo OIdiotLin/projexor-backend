@@ -9,28 +9,24 @@ from apis.controllers.task import TaskController
 from apis.serializers import TaskSerializer
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
-def get_list(request):
-    """查询任务列表
+def get_list_or_create(request):
+    """查询任务列表 or 新建一个任务
     """
-    details = request.GET.dict()
-    tasks = TaskController().get_list(**details)
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        details = request.GET.dict()
+        tasks = TaskController().get_list(**details)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
 
-
-@api_view(['POST'])
-@permission_classes((IsAuthenticated,))
-def create(request):
-    """新建一个任务
-    """
-    details = dict(request.data)
-    task = TaskController().create(**details)
-    if task:
-        serializer = TaskSerializer(task)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(None, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        details = dict(request.data)
+        task = TaskController().create(**details)
+        if task:
+            serializer = TaskSerializer(task)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(None, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT', 'PATCH', 'DELETE', 'GET'])
