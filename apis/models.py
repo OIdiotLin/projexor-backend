@@ -34,6 +34,9 @@ class Project(models.Model):
     name = models.CharField(max_length=100, default='空项目', null=False)
     users = models.ManyToManyField(get_user_model(), through='UserInProject')
 
+    def __str__(self):
+        return '{name} {id}'.format(name=str(self.name), id=str(self.id)[:8])
+
     class Meta:
         verbose_name = '项目'
         verbose_name_plural = '项目'
@@ -54,6 +57,9 @@ class UserInProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     owner = models.BooleanField(default=False, null=False)
     admin = models.BooleanField(default=False, null=False)
+
+    def __str__(self):
+        return '{username} @ {project}'.format(username=str(self.user.username), project=str(self.project))
 
     class Meta:
         verbose_name = '用户 - 项目关系'
@@ -79,6 +85,9 @@ class Resource(models.Model):
     remainder = models.FloatField(null=True)
     unit = models.CharField(max_length=20, null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{name} @ {project}'.format(name=str(self.name), project=str(self.project))
 
     class Meta:
         verbose_name = '资源'
@@ -109,6 +118,9 @@ class Task(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     users = models.ManyToManyField(get_user_model(), through='UserInTask')
 
+    def __str__(self):
+        return '{name} @ {project}'.format(name=str(self.name), project=str(self.project))
+
     class Meta:
         verbose_name = '任务'
         verbose_name_plural = '任务'
@@ -125,6 +137,9 @@ class UserInTask(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{name} @ {project}'.format(name=str(self.user.username), project=str(self.task.name))
 
     class Meta:
         verbose_name = '用户 - 任务关系'
@@ -149,6 +164,9 @@ class Post(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return '{title} @ {project}'.format(title=str(self.title), project=str(self.project))
+
     class Meta:
         verbose_name = '讨论帖'
         verbose_name_plural = '讨论帖'
@@ -169,6 +187,9 @@ class Reply(models.Model):
     time = models.DateTimeField(default=datetime.now, null=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{content}... @ {project}...'.format(content=self.content[:6], project=self.post.title[:6])
 
     class Meta:
         verbose_name = '讨论回复'
