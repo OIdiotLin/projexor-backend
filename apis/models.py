@@ -189,8 +189,39 @@ class Reply(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{content}... @ {project}...'.format(content=self.content[:6], project=self.post.title[:6])
+        return '{content}... @ {post}...'.format(content=self.content[:6], post=self.post.title[:6])
 
     class Meta:
         verbose_name = '讨论回复'
         verbose_name_plural = '讨论回复'
+
+
+def project_storage_path(instance, filename):
+    """https://docs.djangoproject.com/en/2.1/ref/models/fields/#django.db.models.FileField.upload_to"""
+    return '{project}/{filename}'.format(project=str(instance.project), filename=filename)
+
+
+class File(models.Model):
+    """上传文件列表
+
+    Fields:
+        id: 文件 id
+        file: 文件 url
+        time: 上传时间
+        project: 关联项目 project 的 id
+        user: 关联用户 user 的 id
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, null=False, blank=False, default='新文件')
+    file = models.FileField(upload_to=project_storage_path)
+    time = models.DateTimeField(default=datetime.now, null=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.file.name)
+
+    class Meta:
+        verbose_name = '文件'
+        verbose_name_plural = '文件'
