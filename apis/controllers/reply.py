@@ -17,8 +17,16 @@ class ReplyController:
 
     def update(self, **details):
         if details:
-            id = details.pop('id')
-            Reply.objects.filter(id=id).update(**details)
+            reply_id = details.pop('id')
+            reply = Reply.objects.get(id=reply_id)
+            for attr, val in details.items():
+                if attr == 'post':
+                    pass
+                elif attr == 'user':
+                    pass
+                else:
+                    setattr(reply, attr, val)
+            reply.save()
             return True
         return False
 

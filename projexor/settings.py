@@ -25,7 +25,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
+if os.environ.get('DJANGO_DEBUG'):
+    print('run in DEBUG mode...')
+    DEBUG = True
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = ['projexor.oidiotlin.com', 'localhost']
 

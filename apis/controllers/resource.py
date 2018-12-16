@@ -17,8 +17,14 @@ class ResourceController:
 
     def update(self, **details):
         if details:
-            id = details.pop('id')
-            Resource.objects.filter(id=id).update(**details)
+            resource_id = details.pop('id')
+            resource = Resource.objects.get(id=resource_id)
+            for attr, val in details.items():
+                if attr == 'project':
+                    pass
+                else:
+                    setattr(resource, attr, val)
+            resource.save()
             return True
         return False
 
