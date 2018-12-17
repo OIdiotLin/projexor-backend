@@ -14,7 +14,7 @@ def register(request):
     details = dict(request.data)
     user = UserController().create(**details)
     if user:
-        serializer = UserSerializer(data=user)
+        serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(None, status=status.HTTP_400_BAD_REQUEST)
 

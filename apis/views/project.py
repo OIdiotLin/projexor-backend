@@ -1,5 +1,3 @@
-import json
-
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -19,7 +17,6 @@ def get_list_or_create(request):
         projects = ProjectController().get_list(**details)
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     if request.method == 'POST':
         details = dict(request.data)
         project = ProjectController().create(**details)
@@ -47,7 +44,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ProjectController().update(**details)
         if res:
             project = ProjectController().get_single(id=id)
@@ -56,7 +53,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PATCH':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ProjectController().update(**details)
         if res:
             project = ProjectController().get_single(id=id)

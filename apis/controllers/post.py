@@ -17,8 +17,16 @@ class PostController:
 
     def update(self, **details):
         if details:
-            id = details.pop('id')
-            Post.objects.filter(id=id).update(**details)
+            post_id = details.pop('id')
+            post = Post.objects.get(id=post_id)
+            for attr, val in details.items():
+                if attr == 'project':
+                    pass
+                elif attr == 'user':
+                    pass
+                else:
+                    setattr(post, attr, val)
+            post.save()
             return True
         return False
 

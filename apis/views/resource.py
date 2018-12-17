@@ -48,7 +48,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ResourceController().update(**details)
         if res:
             resource = ResourceController().get_single(id=id)
@@ -57,7 +57,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PATCH':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ResourceController().update(**details)
         if res:
             resource = ResourceController().get_single(id=id)

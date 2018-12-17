@@ -1,5 +1,3 @@
-import json
-
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -48,7 +46,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PUT':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ReplyController().update(**details)
         if res:
             reply = ReplyController().get_single(id=id)
@@ -57,7 +55,7 @@ def single_entity(request, id):
         return Response(None, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'PATCH':
-        details = json.loads(request.body)
+        details = dict(request.data)
         res = ReplyController().update(**details)
         if res:
             reply = ReplyController().get_single(id=id)
