@@ -1,8 +1,8 @@
+
 from django.db.models import F
 from singleton_decorator import singleton
 
 from apis.models import Project, UserInProject, User
-
 
 @singleton
 class ProjectController:
@@ -10,6 +10,7 @@ class ProjectController:
         users = details.pop('users')
         project = Project.objects.create(**details)
         self._update_users(project, set([user['id'] for user in users]))
+
         return project
 
     def delete(self, id):
@@ -58,5 +59,4 @@ class ProjectController:
             project = Project.objects.get(id=id)
             return project
         return None
-
 

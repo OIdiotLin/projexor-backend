@@ -17,7 +17,6 @@ def get_list_or_create(request):
         projects = ProjectController().get_list(**details)
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     if request.method == 'POST':
         details = dict(request.data)
         project = ProjectController().create(**details)
